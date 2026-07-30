@@ -1,0 +1,138 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "User account and farm information",
+      "type": "object",
+      "properties": {
+        "firstName": { "type": "string" },
+        "lastName": { "type": "string" },
+        "username": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "farmName": { "type": "string" },
+        "farmSize": { "type": "number" },
+        "mainCrop": { "type": "string" },
+        "farmLocation": { "type": "string" },
+        "avatarUrl": { "type": "string" },
+        "is_organization": { "type": "boolean" },
+        "followersCount": { "type": "integer" },
+        "followingCount": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "firstName", "lastName"]
+    },
+    "Post": {
+      "title": "Community Post",
+      "description": "A post in the community feed",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userDisplayName": { "type": "string" },
+        "userPhotoURL": { "type": "string" },
+        "content": { "type": "string" },
+        "mediaUrl": { "type": "string" },
+        "mediaType": { "type": "string", "enum": ["image", "video"] },
+        "likes": { "type": "integer" },
+        "likedBy": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "content", "createdAt"]
+    },
+    "Comment": {
+      "title": "Post Comment",
+      "description": "A comment on a community post",
+      "type": "object",
+      "properties": {
+        "postId": { "type": "string" },
+        "userId": { "type": "string" },
+        "userDisplayName": { "type": "string" },
+        "content": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["postId", "userId", "content", "createdAt"]
+    },
+    "SensorReading": {
+      "title": "Sensor Reading",
+      "description": "Data from IoT sensors",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "soilMoisture": { "type": "number" },
+        "temperature": { "type": "number" },
+        "humidity": { "type": "number" },
+        "lightLevel": { "type": "number" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "timestamp"]
+    },
+    "FarmLog": {
+      "title": "Farm Log",
+      "description": "Logged AI recommendations and detections",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "type": { "type": "string", "enum": ["crop_recommendation", "disease_detection"] },
+        "data": { "type": "object" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "type", "data", "createdAt"]
+    },
+    "NewsletterSubscription": {
+      "title": "Newsletter Subscription",
+      "description": "User email for newsletter subscription",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "subscribedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "subscribedAt"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "User notification for social interactions",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "fromUserId": { "type": "string" },
+        "type": { "type": "string", "enum": ["comment", "like", "news", "system"] },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "link": { "type": "string" },
+        "isRead": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "title", "message", "type", "isRead", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/profiles/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile documents"
+    },
+    "/posts/{postId}": {
+      "schema": "Post",
+      "description": "Community feed posts"
+    },
+    "/posts/{postId}/comments/{commentId}": {
+      "schema": "Comment",
+      "description": "Comments on specific posts"
+    },
+    "/sensor_readings/{readingId}": {
+      "schema": "SensorReading",
+      "description": "Historical sensor data"
+    },
+    "/farm_logs/{logId}": {
+      "schema": "FarmLog",
+      "description": "AI analysis logs for crops and diseases"
+    },
+    "/newsletter_subscriptions/{subscriptionId}": {
+      "schema": "NewsletterSubscription",
+      "description": "Newsletter email list"
+    },
+    "/notifications/{notifId}": {
+      "schema": "Notification",
+      "description": "User notifications"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Agricultural Crop Analysis (ACA)",
+  "description": "A comprehensive platform for sustainable agriculture featuring AI-driven crop analysis, real-time weather, market data, and community insights.",
+  "requestFramePermissions": [
+    "geolocation",
+    "serial"
+  ]
+}
