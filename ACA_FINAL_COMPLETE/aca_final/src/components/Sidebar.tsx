@@ -22,7 +22,7 @@ import {
   Camera,
   ShieldCheck,
   MessageSquare,
-  Users
+  Users,
   HelpCircle,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
