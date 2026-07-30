@@ -47,39 +47,55 @@ const Chatbot: React.FC<ChatbotProps> = ({ user }) => {
     }
   };
 
-  const handleSend = async () => {
-    if ((!input.trim() && !selectedImage) || isLoading) return;
+ const handleSend = async () => {
+  if ((!input.trim() && !selectedImage) || isLoading) return;
 
-    const userMessage = input.trim();
-    const currentImage = selectedImage;
-    
-    setInput('');
-    setSelectedImage(null);
-    setMessages(prev => [...prev, { role: 'user', content: userMessage, image: currentImage || undefined }]);
-    setIsLoading(true);
+  const userMessage = input.trim();
+  const currentImage = selectedImage;
 
-    try {
-      // Call via secure server proxy — key never in browser
-      
-      const parts: any[] = [{ text: userMessage || "Analyze this image." }];
-      if (currentImage) {
-        parts.push({
-          inlineData: {
-            mimeType: "image/jpeg",
-            data: currentImage.split(",")[1]
-          }
-        });
-      }
+  setInput('');
+  setSelectedImage(null);
+  setMessages(prev => [...prev, { role: 'user', content: userMessage, image: currentImage || undefined }]);
+  setIsLoading(true);
 
-     const response = await ai.models.generateContent({
-  model: "gemini-3.1-pro-preview",
-  contents: [{ parts }],
-  config: {
-    thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
-    tools: [{ googleSearch: {} }],
-    systemInstruction: ``You are a highly advanced agricultural expert for the ACA (Agricultural Crop Analysis) platform. `
+  try {
+    // 1. Build the Gemini "contents" array
+    // The server expects an array of messages with role and parts.
+    const parts: any[] = [{ text: userMessage || "Analyze this image." }];
+    if (currentImage) {
+      parts.push({
+        inlineData: {
+          mimeType: "image/jpeg",
+          data: currentImage.split(",")[1] // Removes the "data:image/jpeg;base64," prefix
+        }
+      });
+    }
+
+    const contents = [{ role: "user", parts }];
+
+    // 2. Send to your secure server proxy (/api/ai)
+    const response = await fetch('/api/ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'chatbot',
+        data: { messages: contents } // Your server uses data.messages directly
+      }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'AI request failed');
+
+    // 3. Add the bot's reply to the chat
+    const botReply = data.text || t("chatbot.error") || "I'm sorry, I couldn't process that request.";
+    setMessages(prev => [...prev, { role: 'bot', content: botReply }]);
+  } catch (error) {
+    console.error("AI Error:", error);
+    setMessages(prev => [...prev, { role: 'bot', content: t("chatbot.connection_error") || "Sorry, I'm having trouble connecting right now. Please try again later." }]);
+  } finally {
+    setIsLoading(false);
   }
-}); 
+};
           
           CRITICAL: You MUST respond in the following language: ${language}.
           
