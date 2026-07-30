@@ -71,13 +71,15 @@ const Chatbot: React.FC<ChatbotProps> = ({ user }) => {
         });
       }
 
-      const response = await ai.models.generateContent({
-        model: "gemini-3.1-pro-preview",
-        contents: [{ parts }],
-        config: {
-          thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
-          tools: [{ googleSearch: {} }],
-          systemInstruction: `You are a highly advanced agricultural expert for the ACA (Agricultural Crop Analysis) platform. 
+     const response = await ai.models.generateContent({
+  model: "gemini-3.1-pro-preview",
+  contents: [{ parts }],
+  config: {
+    thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
+    tools: [{ googleSearch: {} }],
+    systemInstruction: ``You are a highly advanced agricultural expert for the ACA (Agricultural Crop Analysis) platform. `
+  }
+}); 
           
           CRITICAL: You MUST respond in the following language: ${language}.
           
